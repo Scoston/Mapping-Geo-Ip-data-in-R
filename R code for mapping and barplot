@@ -1,0 +1,29 @@
+#library needed
+devtools::install_github("dkahle/ggmap")
+library(plotGoogleMaps)
+library(ggmap) 
+library(googlevis)
+install.packages(c("devtools","RJSONIO", "knitr", "shiny", "httpuv"))
+install_github("mages/googleVis")
+#Reads the csv file
+geo <- read.csv("geoip.csv")
+#This takes the latitude and longitude and combines the two with a separation ':' and creates geo1 data set
+geo1 <- within(geo, Location <- paste(latitude, longitude, sep=':'))
+require(googleVis)
+#This places the names on the markers when you mouse over,
+placeNames <- as.character(geo1$ip) 
+plotData<-data.frame(name=placeNames,latLong=unlist(geo1$Location)) 
+sites <- gvisMap(plotData,locationvar="latLong",tipvar="name",  
+                options=list(displayMode = "Markers", mapType='normal', colorAxis = "{colors:['red', 'grey']}", 
+                             useMapTypeControl=TRUE, enableScrollWheel='TRUE')) 
+ plot(sites) 
+#This section will allow you to create a bar plot of the country_codes
+#create a table of the country codes
+cc = geo$country_code
+table(cc)
+# creates a barplot with the counts of each variable in cc
+barplot(xtabs(~cc), main = " Attacking Countries", ylab = "Total", xlab = "Countries Code", col = heat.colors(5))
+# colors can used anything but these are the combinations that are a valuable rainbow, heat.colors, terrain.colors, topo.colors, cm.colors
+# This creates a legend for the bargraph
+ legend ("topleft", c("GB", "US"), cex = .6, bty = "n", fill = heat.colors(5))
+ 
